@@ -1,58 +1,109 @@
 import data
 from selenium import webdriver
-from selenium.webdriver import Keys
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions
+from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
-
-
-# no modificar
-def retrieve_phone_code(driver) -> str:
-    """Este código devuelve un número de confirmación de teléfono y lo devuelve como un string.
-    Utilízalo cuando la aplicación espere el código de confirmación para pasarlo a tus pruebas.
-    El código de confirmación del teléfono solo se puede obtener después de haberlo solicitado en la aplicación."""
-
-    import json
-    import time
-    from selenium.common import WebDriverException
-    code = None
-    for i in range(10):
-        try:
-            logs = [log["message"] for log in driver.get_log('performance') if log.get("message")
-                    and 'api/v1/number?number' in log.get("message")]
-            for log in reversed(logs):
-                message_data = json.loads(log)["message"]
-                body = driver.execute_cdp_cmd('Network.getResponseBody',
-                                              {'requestId': message_data["params"]["requestId"]})
-                code = ''.join([x for x in body['body'] if x.isdigit()])
-        except WebDriverException:
-            time.sleep(1)
-            continue
-        if not code:
-            raise Exception("No se encontró el código de confirmación del teléfono.\n"
-                            "Utiliza 'retrieve_phone_code' solo después de haber solicitado el código en tu aplicación.")
-        return code
-
+import time
+from codigo_sms import retrieve_phone_code #Importa la funcion para obtener el codigo del SMS
+from locators import UrbanRoutesLocators  #Importa los selectores desde el nuevo módulo
 
 class UrbanRoutesPage:
-    from_field = (By.ID, 'from')
-    to_field = (By.ID, 'to')
-
     def __init__(self, driver):
         self.driver = driver
+        self.selectors = UrbanRoutesLocators # Instancia de la clase con los selectores
 
-    def set_from(self, from_address):
-        self.driver.find_element(*self.from_field).send_keys(from_address)
+    def espera_apertura_pagina(self):
+        WebDriverWait(self.driver, 10).until(EC.presence_of_element_located(self.selectors.campo_direccion_desde))
 
-    def set_to(self, to_address):
-        self.driver.find_element(*self.to_field).send_keys(to_address)
+    def espera_cargar_mapa(self):
+        WebDriverWait(self.driver, 5).until(EC.visibility_of_element_located(self.selectors.mapa))
+
+    def espera_formulario_ruta(self):
+        self.driver.implicitly_wait(35)
+        time.sleep(35)
+
+    def ingresar_direccion_desde(self, direccion_desde):
+        self.driver.find_element(*self.selectors.campo_direccion_desde).send_keys(direccion_desde)
+
+    def ingresar_direccion_hasta(self, direccion_hasta):
+        self.driver.find_element(*self.selectors.campo_direccion_hasta).send_keys(direccion_hasta)
+
+    def click_boton_pedir_taxi(self):
+        self.driver.find_element(*self.selectors.boton_pedir_taxi).click()
+
+    def click_tarifa_comfort(self):
+        WebDriverWait(self.driver, 3).until(EC.element_to_be_clickable(self.selectors.tarifa_comfort))
+        self.driver.find_element(*self.selectors.tarifa_comfort).click()
+
+    def click_numero_telefono(self):
+        self.driver.find_element(*self.selectors.entrada_numero_telefono).click()
+
+    def ingresar_numero_telefono(self, entrada_telefono):
+        self.driver.find_element(*self.selectors.modal_entrada_numero_telefono).send_keys(entrada_telefono)
+
+    def click_boton_modal_siguiente_numero_telefono(self):
+        self.driver.find_element(*self.selectors.boton_siguiente_modal_telefono).click()
+
+    def ingresar_codigo_sms(self):
+        respuesta_sms = retrieve_phone_code(driver=self.driver) #Extraemos la función que obtiene el codigo SMS y la pasamos a una variable
+        self.driver.find_element(*self.selectors.entrada_codigo_sms).send_keys(respuesta_sms) #ubicamos el selector del campo y colocamos la variable donde almacena el codigo.
+
+    def click_boton_confirmar_sms(self):
+        self.driver.find_element(*self.selectors.boton_confirmar_sms).click()
+
+    def click_enlace_forma_de_pago(self):
+        self.driver.find_element(*self.selectors.enlace_forma_de_pago).click()
+
+    def click_boton_modal_agregar_tarjeta(self):
+        self.driver.find_element(*self.selectors.boton_modal_agregar_tarjeta).click()
+
+    def ingresar_entrada_numero_tarjeta(self, numero_tarjeta, codigo_tarjeta):
+        self.driver.find_element(*self.selectors.entrada_numero_tarjeta).send_keys(numero_tarjeta)
+        self.driver.find_element(*self.selectors.entrada_cvv_numero_tarjeta).send_keys(codigo_tarjeta)
+        time.sleep(1)
+    def click_formulario_tarjeta_espacio_blanco(self):
+        self.driver.find_element(*self.selectors.formulario_tarjeta_espacio_blanco).click()
+
+    def click_boton_agregar_tarjeta_enlace(self):
+        self.driver.find_element(*self.selectors.boton_agregar_tarjeta_enlace).click()
+
+    def click_boton_cerrar_modal_agregar_tarjeta(self):
+        self.driver.find_element(*self.selectors.boton_cerrar_modal_agregar_tarjeta).click()
+
+    def ingresar_entrada_comentario_conductor(self, mensaje_para_conductor):
+        self.driver.find_element(*self.selectors.entrada_comentario_conductor).send_keys(mensaje_para_conductor)
+
+    def agregar_requisitos_manta_panuelo(self):
+        self.driver.find_element(*self.selectors.requisitos_manta_panuelo).click()
+        time.sleep(1)
+
+    def agregar_requisitos_dos_helados(self):
+        self.driver.find_element(*self.selectors.requisitos_dos_helados).click()
+        self.driver.find_element(*self.selectors.requisitos_dos_helados).click()
+        time.sleep(1)
+
+    def click_boton_pedir_un_taxi_final(self):
+        self.driver.find_element(*self.selectors.boton_pedir_un_taxi_final).click()
+
+    def click_boton_detalles_de_la_ruta(self):
+        self.driver.find_element(*self.selectors.boton_detalles_de_la_ruta).click()
+        WebDriverWait(self.driver, 30).until(EC.element_to_be_clickable(self.selectors.formulario_detalles_de_la_ruta))
 
     def get_from(self):
-        return self.driver.find_element(*self.from_field).get_property('value')
+        return self.driver.find_element(*self.selectors.campo_direccion_desde).get_property('value')
 
     def get_to(self):
-        return self.driver.find_element(*self.to_field).get_property('value')
+        return self.driver.find_element(*self.selectors.campo_direccion_hasta).get_property('value')
 
+    def get_numero_telefono(self):
+        return self.driver.find_element(*self.selectors.modal_entrada_numero_telefono).get_property('value')
+
+    def get_entrada_numero_tarjeta(self):
+        numero_tarjeta = self.driver.find_element(*self.selectors.entrada_numero_tarjeta).get_property('value')
+        cvv_numero_tarjeta = self.driver.find_element(*self.selectors.entrada_cvv_numero_tarjeta).get_property('value')
+        return numero_tarjeta, cvv_numero_tarjeta
+
+    def get_entrada_comentario_conductor(self):
+        return self.driver.find_element(*self.selectors.entrada_comentario_conductor).get_property('value')
 
 
 class TestUrbanRoutes:
@@ -61,22 +112,57 @@ class TestUrbanRoutes:
 
     @classmethod
     def setup_class(cls):
-        # no lo modifiques, ya que necesitamos un registro adicional habilitado para recuperar el código de confirmación del teléfono
-        from selenium.webdriver import DesiredCapabilities
-        capabilities = DesiredCapabilities.CHROME
-        capabilities["goog:loggingPrefs"] = {'performance': 'ALL'}
-        cls.driver = webdriver.Chrome(desired_capabilities=capabilities)
+        chrome_options = webdriver.ChromeOptions()
+        chrome_options.add_experimental_option("perfLoggingPrefs", {'enableNetwork': True, 'enablePage': True})
+        chrome_options.set_capability("goog:loggingPrefs", {'performance': 'ALL'})
+        cls.driver = webdriver.Chrome(options=chrome_options)
+        cls.driver.maximize_window()
+
 
     def test_set_route(self):
         self.driver.get(data.urban_routes_url)
         routes_page = UrbanRoutesPage(self.driver)
-        address_from = data.address_from
-        address_to = data.address_to
-        routes_page.set_route(address_from, address_to)
-        assert routes_page.get_from() == address_from
-        assert routes_page.get_to() == address_to
 
+        direccion_desde = data.direccion_desde
+        direccion_hasta = data.direccion_hasta
+        numero_telefono = data.numero_telefono
+        numero_tarjeta = data.numero_tarjeta
+        codigo_tarjeta = data.codigo_tarjeta
+        mensaje_para_conductor = data.mensaje_para_conductor
+
+        routes_page.espera_apertura_pagina()
+        routes_page.ingresar_direccion_desde(direccion_desde)
+        routes_page.ingresar_direccion_hasta(direccion_hasta)
+        routes_page.espera_cargar_mapa()
+        routes_page.click_boton_pedir_taxi()
+        routes_page.click_tarifa_comfort()
+        routes_page.click_numero_telefono()
+        routes_page.ingresar_numero_telefono(numero_telefono)
+        routes_page.click_boton_modal_siguiente_numero_telefono()
+        routes_page.ingresar_codigo_sms()
+        routes_page.click_boton_confirmar_sms()
+        routes_page.click_enlace_forma_de_pago()
+        routes_page.click_boton_modal_agregar_tarjeta()
+        routes_page.ingresar_entrada_numero_tarjeta(numero_tarjeta, codigo_tarjeta)
+        routes_page.click_formulario_tarjeta_espacio_blanco()
+        routes_page.click_boton_agregar_tarjeta_enlace()
+        routes_page.click_boton_cerrar_modal_agregar_tarjeta()
+        routes_page.ingresar_entrada_comentario_conductor(mensaje_para_conductor)
+        routes_page.agregar_requisitos_manta_panuelo()
+        routes_page.agregar_requisitos_dos_helados()
+        routes_page.click_boton_pedir_un_taxi_final()
+        routes_page.click_boton_detalles_de_la_ruta()
+        routes_page.espera_formulario_ruta()
+        numero_tarjeta_value, cvv_numero_tarjeta_value = routes_page.get_entrada_numero_tarjeta()
+
+        assert routes_page.get_from() == direccion_desde
+        assert routes_page.get_to() == direccion_hasta
+        assert routes_page.get_numero_telefono() == numero_telefono
+        assert routes_page.get_entrada_comentario_conductor() == mensaje_para_conductor
+        assert numero_tarjeta_value == numero_tarjeta
+        assert cvv_numero_tarjeta_value == codigo_tarjeta
 
     @classmethod
     def teardown_class(cls):
         cls.driver.quit()
+

@@ -33,11 +33,11 @@ Para el desarrollo del proyecto se utilizó:
 - data.py: Contiene datos de prueba, como la URL de Urban Routes, direcciones de origen y destino, números de teléfono y detalles de tarjetas.
 - codigo_sms.py: Proporciona una función para recuperar el código SMS necesario para la verificación.
 - locators.py: Define la clase `UrbanRoutesLocators` que almacena los selectores de elementos de la interfaz de usuario.
-
+- interceptor.py: Proporciona una función para recuperar la respuesta de los resultados de la ruta (nombre conductor, tiempo de espera y placa de vehiculo) para la verificación.
 #### Clases Principales
 - *UrbanRoutesPage*: Implementa métodos para interactuar con la interfaz de Urban Routes, desde el ingreso de direcciones hasta la confirmación del pedido.
-- *TestUrbanRoutes*: Contiene casos de prueba utilizando la biblioteca de pruebas `pytest`. Configura y cierra el navegador, además de realizar pruebas de extremo a extremo.
+- *TestUrbanRoutes*: Contiene los casos de prueba utilizando la biblioteca de pruebas `pytest`. Configura y cierra el navegador, además de realizar las 8 pruebas.
 
 1. Clona el repositorio.
 2. Instala las dependencias necesarias (`pip install selenium pytest`).
-3. Ejecuta las pruebas de TestUrbanRoutes.
+3. Ejecuta las pruebas de TestUrbanRoutes (archivo main.py).

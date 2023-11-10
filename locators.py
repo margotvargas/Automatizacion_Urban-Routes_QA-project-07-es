@@ -1,7 +1,7 @@
 
 from selenium.webdriver.common.by import By
-class UrbanRoutesLocators:
 
+class UrbanRoutesLocators:
     campo_direccion_desde = (By.ID, 'from')
     campo_direccion_hasta = (By.ID, 'to')
     mapa = (By.CLASS_NAME, 'gm-style')
@@ -20,14 +20,15 @@ class UrbanRoutesLocators:
     boton_agregar_tarjeta_enlace = (By.XPATH, "//button[@type='submit'][@class='button full' and text()='Enlace']")
     boton_cerrar_modal_agregar_tarjeta = (By.XPATH, '//*[@id="root"]/div/div[2]/div[2]/div[1]/button')
     entrada_comentario_conductor = (By.ID, 'comment')
-    requisitos_manta_panuelo = (By.XPATH, '//*[@id="root"]/div/div[3]/div[3]/div[2]/div[2]/div[4]/div[2]/div[1]/div/div[2]/div/span')
-    checkbox_manta_panuelo = (By.XPATH, '//*[@id="root"]/div/div[3]/div[3]/div[2]/div[2]/div[4]/div[2]/div[1]/div/div[2]/div/input')
+    requisitos_manta_panuelo = (By.XPATH, "//*[@id='root']/div/div[3]/div[3]/div[2]/div[2]/div[4]/div[2]/div[1]/div/div[2]/div/span")
+    checkbox_manta_panuelo = (By.XPATH, "//*[@id='root']/div/div[3]/div[3]/div[2]/div[2]/div[4]/div[2]/div[1]/div/div[2]/div/input")
     etiqueta_manta_panuelos = (By.XPATH, "//div[contains(text(),'Manta y pañuelos')]")
     requisitos_dos_helados = (By.XPATH, '//*[@id="root"]/div/div[3]/div[3]/div[2]/div[2]/div[4]/div[2]/div[3]/div/div[2]/div[1]/div/div[2]/div/div[3]')
     contador_dos_helados = (By.XPATH, '//*[@id="root"]/div/div[3]/div[3]/div[2]/div[2]/div[4]/div[2]/div[3]/div/div[2]/div[1]/div/div[2]/div/div[2]')
     boton_pedir_un_taxi_final = (By.CLASS_NAME, 'smart-button')
     boton_detalles_de_la_ruta = (By.XPATH, "//button[@class='order-button' and img[@alt='burger']]")
     formulario_detalles_de_la_ruta = (By.CLASS_NAME, 'order-body')
+    etiqueta_formulario_buscando_taxi = (By.XPATH, "//div[@class='order-header-title' and text()='Buscar automóvil']")
     etiqueta_nombre_conductor = (By.XPATH, '//*[@id="root"]/div/div[5]/div[2]/div[2]/div[1]/div[1]/div[2]')
     etiqueta_placa_vehiculo = (By.XPATH, "//div[@class='number']")
     etiqueta_minutos_espera_vehiculo = (By.XPATH, "//div[@class='order-header-title']")
